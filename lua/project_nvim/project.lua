@@ -116,29 +116,36 @@ function M.find_pattern_root()
     end
   end
 
-  -- breadth-first search
-  while true do
-    for _, pattern in ipairs(config.options.patterns) do
+  local function try_pattern(current, pattern)
+    while true do
       local exclude = false
       if pattern:sub(1, 1) == "!" then
         exclude = true
         pattern = pattern:sub(2)
       end
-      if match(search_dir, pattern) then
+      if match(current, pattern) then
         if exclude then
           break
         else
-          return search_dir, "pattern " .. pattern
+          return current, "pattern " .. pattern
         end
       end
-    end
 
-    local parent = get_parent(search_dir)
-    if parent == search_dir or parent == nil then
-      return nil
-    end
+      local parent = get_parent(current)
+      if parent == current or parent == nil then
+        return nil
+      end
 
-    search_dir = parent
+      current = parent
+    end
+  end
+
+  -- breadth-first search
+  for _, pattern in ipairs(config.options.patterns) do
+    local res, hint = try_pattern(search_dir, pattern)
+    if res ~= nil then
+      return res, hint
+    end
   end
 end
 
