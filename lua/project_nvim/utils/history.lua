@@ -67,7 +67,7 @@ function M.delete_project(project)
   end
 end
 
-local function deserialize_history(history_data)
+local function deserialize_history(history_data, callback)
   -- split data to table
   local projects = {}
   for s in history_data:gmatch("[^\r\n]+") do
@@ -79,6 +79,9 @@ local function deserialize_history(history_data)
   projects = delete_duplicates(projects)
 
   M.recent_projects = projects
+  if callback then
+    callback()
+  end
 end
 
 local function setup_watch()
@@ -101,7 +104,7 @@ local function setup_watch()
   end
 end
 
-function M.read_projects_from_history()
+function M.read_projects_from_history(callback)
   open_history("r", function(_, fd)
     setup_watch()
     if fd ~= nil then
@@ -109,7 +112,7 @@ function M.read_projects_from_history()
         if stat ~= nil then
           uv.fs_read(fd, stat.size, -1, function(_, data)
             uv.fs_close(fd, function(_, _) end)
-            deserialize_history(data)
+            deserialize_history(data, callback)
           end)
         end
       end)

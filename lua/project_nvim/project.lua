@@ -261,7 +261,7 @@ function M.add_project_manually()
   M.set_pwd(current_dir, 'manual')
 end
 
-function M.init()
+function M.init(callback)
   local autocmds = {}
   if not config.options.manual_mode then
     autocmds[#autocmds + 1] = 'autocmd VimEnter,BufEnter * ++nested lua require("project_nvim.project").on_buf_enter()'
@@ -287,7 +287,7 @@ function M.init()
   end
   vim.cmd("augroup END")
 
-  history.read_projects_from_history()
+  history.read_projects_from_history(callback)
 end
 
 return M

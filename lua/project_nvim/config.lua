@@ -60,7 +60,7 @@ M.setup = function(options)
   vim.opt.autochdir = false -- implicitly unset autochdir
 
   require("project_nvim.utils.path").init()
-  require("project_nvim.project").init()
+  require("project_nvim.project").init(options.open_callback)
 end
 
 return M
